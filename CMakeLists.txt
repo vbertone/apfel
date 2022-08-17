@@ -59,7 +59,7 @@ if (LHAPDF_CONFIG)
   set(LHAPDF_LIBRARIES ${LHAPDF_LIBRARIES} CACHE STRING INTERNAL)
 else(LHAPDF_CONFIG)
   add_compile_definitions(NOLHAPDF)
-  message("LHAPDF not found!")
+  message("-- LHAPDF not found")
 endif(LHAPDF_CONFIG)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LHAPDF_CXX_FLAGS} -Wall -fPIC -Wunused")
