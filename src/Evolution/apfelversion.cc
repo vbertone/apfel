@@ -17,4 +17,17 @@ extern "C" {
       fversion[i] = ' ';
     }
   }
+
+  #pragma weak externalsetapfel_
+  #pragma weak externalsetapfel1_
+  #pragma weak externalsetapfelrep_
+  #pragma weak externalsetapfelrep1_
+  #pragma weak externalsetapfellept_
+  #pragma weak pretabulatedpdfsrep_
+  void externalsetapfel_(double, double, double*)  { return; }
+  void externalsetapfel1_(double, double, double*) { return; }
+  void externalsetapfelrep_(double, double, int, double*)  { return; }
+  void externalsetapfelrep1_(double, double, int, double*) { return; }
+  void externalsetapfellept_(double, double, int, double*, double*) { return; }
+  void pretabulatedpdfsrep_(int, int, int, double*) { return; }
 }

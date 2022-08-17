@@ -19,6 +19,8 @@ pywrap/setup.py
 *.table
 *.info
 pywrap/build
+pywrap/APFEL.egg-info/
+pywrap/dist/
 examples/DISObservables
 examples/DISObservablesCxx
 examples/LHgridDerivativeProduction
