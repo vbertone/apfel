@@ -18,6 +18,7 @@ pywrap/setup.py
 *.dirstamp
 *.table
 *.info
+include/APFEL/version.h
 pywrap/build
 pywrap/APFEL.egg-info/
 pywrap/dist/

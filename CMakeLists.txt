@@ -8,7 +8,13 @@ cmake_policy(SET CMP0078 OLD)
 
 # define project name, version and its languages
 project(apfel CXX Fortran)
-set(apfel_VERSION 3.0.7)
+set(apfel_VERSION 3.0.8)
+
+# export version to file
+configure_file(
+  "${PROJECT_SOURCE_DIR}/include/APFEL/version.h.in"
+  "${PROJECT_SOURCE_DIR}/include/APFEL/version.h"
+)
 
 # define c++ standard and issue all the warning demanded by this standard
 set(CMAKE_BUILD_TYPE Release)
@@ -30,7 +36,6 @@ set(prefix ${CMAKE_INSTALL_PREFIX})
 set(exec_prefix "${prefix}")
 set(includedir "${prefix}/include")
 set(libdir "${prefix}/lib")
-set(PACKAGE_VERSION "${apfel_VERSION}")
 configure_file("${PROJECT_SOURCE_DIR}/bin/apfel-config.in" "${PROJECT_SOURCE_DIR}/bin/apfel-config")
 
 # Fortran wrappers =========================================================================
@@ -91,6 +96,6 @@ ${CMAKE_CURRENT_BINARY_DIR}/examples/CheckAPFEL ${CMAKE_CURRENT_BINARY_DIR}/exam
 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
 GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-find_package(Python3 REQUIRED)
-execute_process(COMMAND "${Python3_EXECUTABLE}" -c "import distutils.sysconfig; print(distutils.sysconfig.get_python_lib(prefix='${CMAKE_INSTALL_PREFIX}', plat_specific=True), end = '')" OUTPUT_VARIABLE PYTHON_INSTALLATION_PATH)
-install(TARGETS _apfel LIBRARY DESTINATION "${PYTHON_INSTALLATION_PATH}")
+#find_package(Python3 REQUIRED)
+#execute_process(COMMAND "${Python3_EXECUTABLE}" -c "import distutils.sysconfig; print(distutils.sysconfig.get_python_lib(prefix='${CMAKE_INSTALL_PREFIX}', plat_specific=True), end = '')" OUTPUT_VARIABLE PYTHON_INSTALLATION_PATH)
+#install(TARGETS _apfel LIBRARY DESTINATION "${PYTHON_INSTALLATION_PATH}")

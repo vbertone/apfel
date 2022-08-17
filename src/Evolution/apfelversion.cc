@@ -2,6 +2,7 @@
 // Implements fake symbols for OS compilation
 
 #include "APFEL/FortranWrappers.h"
+#include "APFEL/version.h"
 #include <string>
 #include <cstring>
 
@@ -11,7 +12,7 @@
 extern "C" {
   #define fgetapfelversion FC_FUNC(getapfelversion, GETAPFELVERSION)
   void fgetapfelversion(char* fversion, int) {
-    std::string version = STR(APFEL_VERSION);
+    std::string version = STR(VERSION);
     strncpy(fversion, version.c_str(),  version.length()+1);
     for (size_t i = strlen(fversion); i < (unsigned) version.length()+1; ++i) {
       fversion[i] = ' ';
