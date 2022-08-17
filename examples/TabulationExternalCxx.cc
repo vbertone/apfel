@@ -64,7 +64,7 @@ int main()
   return 0;
 }
 
-void externalsetapfel_(double const& x, double const& Q, double* xf)
+void externalsetapfel_(double const& x, double const&, double* xf)
 {
   const double N_uv = 5.107200;
   const double auv  = 0.8;

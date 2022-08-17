@@ -270,36 +270,55 @@
 *
 ************************************************************************
 *
-*     Define external functions for OS compilation
+*     Define external that will be overloaded if required
 *
 ************************************************************************
-#ifndef DARWIN
       subroutine ExternalSetAPFEL(x,Q,xf)
       double precision x,Q,xf(-6:7)
+      do i=-6,7
+         xf(i) = 0d0
+      enddo
       return
       end
       subroutine ExternalSetAPFEL1(x,Q,xf)
       double precision x,Q,xf(-6:7)
+      do i=-6,7
+         xf(i) = 0d0
+      enddo
       return
       end
       subroutine ExternalSetAPFELLept(x,Q,i,xl,xf)
       integer i
-      double precision x,Q,xl(-3,3),xf(-6:7)
+      double precision x,Q,xl(-3:3),xf(-6:7)
+      do i=-6,7
+         xf(i) = 0d0
+      enddo
+      do i=-3,3
+         xl(i) = 0d0
+      enddo
       return
       end
       subroutine ExternalSetAPFELRep(x,Q,i,xf)
       integer i
       double precision x,Q,xf(-6:7)
+      do i=-6,7
+         xf(i) = 0d0
+      enddo
       return
       end
       subroutine ExternalSetAPFELRep1(x,Q,i,xf)
       integer i
       double precision x,Q,xf(-6:7)
+      do i=-6,7
+         xf(i) = 0d0
+      enddo
       return
       end
       subroutine pretabulatedPDFsRep(ig,alpha,i,xf)
       integer ig,alpha,i
       double precision xf(-6:6)
+      do i=-6,6
+         xf(i) = 0d0
+      enddo
       return
       end
-#endif
