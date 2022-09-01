@@ -96,6 +96,3 @@ ${CMAKE_CURRENT_BINARY_DIR}/examples/CheckAPFEL ${CMAKE_CURRENT_BINARY_DIR}/exam
 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
 GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-#find_package(Python3 REQUIRED)
-#execute_process(COMMAND "${Python3_EXECUTABLE}" -c "import distutils.sysconfig; print(distutils.sysconfig.get_python_lib(prefix='${CMAKE_INSTALL_PREFIX}', plat_specific=True), end = '')" OUTPUT_VARIABLE PYTHON_INSTALLATION_PATH)
-#install(TARGETS _apfel LIBRARY DESTINATION "${PYTHON_INSTALLATION_PATH}")
