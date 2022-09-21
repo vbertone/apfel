@@ -18,12 +18,12 @@ Qmin = 10
 Qmax = 6e3
 NMX  = 30
 
-print "Luminosities at sqrt(S) = ", S**0.5," GeV:\n"
-print "- gg luminosity "
+print("Luminosities at sqrt(S) = ", S**0.5," GeV:\n")
+print("- gg luminosity ")
     
 for i in range(1,31):
     Q = Qmin * pow(Qmax/Qmin,(float)(i-1)/(float)(NMX-1));
     apfel.EvolveAPFEL(Q0,Q);
-    print "MX = ", Q,"LUMI =",apfel.LUMI(0,0,S)
+    print("MX = ", Q,"LUMI =",apfel.LUMI(0,0,S))
 
-print ""
+print("")
