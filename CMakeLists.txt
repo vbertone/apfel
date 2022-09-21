@@ -91,6 +91,7 @@ ${CMAKE_CURRENT_BINARY_DIR}/examples/CheckAPFEL ${CMAKE_CURRENT_BINARY_DIR}/exam
 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
 GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-execute_process(COMMAND python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
-install(TARGETS _apfel DESTINATION ${PYTHON_SITE_PACKAGES})
-install(FILES ${CMAKE_BINARY_DIR}/pywrap/apfel.py DESTINATION ${PYTHON_SITE_PACKAGES})
+find_package(Python3 REQUIRED)
+execute_process(COMMAND "${Python3_EXECUTABLE}" -c "import distutils.sysconfig; print(distutils.sysconfig.get_python_lib(prefix='${CMAKE_INSTALL_PREFIX}', plat_specific=True), end = '')" OUTPUT_VARIABLE PYTHON_INSTALLATION_PATH)
+install(TARGETS _apfel DESTINATION "${PYTHON_INSTALLATION_PATH}")
+install(FILES ${CMAKE_BINARY_DIR}/pywrap/apfel.py DESTINATION ${PYTHON_INSTALLATION_PATH})
