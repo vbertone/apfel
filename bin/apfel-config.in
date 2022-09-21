@@ -44,10 +44,7 @@ tmp=$( echo "$*" | egrep -- '--\<libdir\>')
 test -n "$tmp" && OUT="$OUT @libdir@"
 
 tmp=$( echo "$*" | egrep -- '--\<ldflags\>')
-test -n "$tmp" && OUT="$OUT -L@libdir@ -lAPFEL"
-
-tmp=$( echo "$*" | egrep -- '--\<ldflagsevol\>')
-test -n "$tmp" && OUT="$OUT -L@libdir@ -lAPFELevol"
+test -n "$tmp" && OUT="$OUT -L@libdir@ -lapfel"
 
 tmp=$( echo "$*" | egrep -- '--\<list-funcs\>')
 test -n "$tmp" && ListFunctions
