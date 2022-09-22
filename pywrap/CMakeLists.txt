@@ -31,7 +31,7 @@ if (SWIG_FOUND)
              COMMAND python ${SETUP_PY_OUT} install)
 
    find_package(Python3 REQUIRED)
-   execute_process(COMMAND "${Python3_EXECUTABLE}" -c "import distutils.sysconfig; print(distutils.sysconfig.get_python_lib(prefix='${CMAKE_INSTALL_PREFIX}', plat_specific=True), end = '')" OUTPUT_VARIABLE PYTHON_INSTALLATION_PATH)
+   execute_process(COMMAND "${Python3_EXECUTABLE}" -c "import sysconfig; print('${CMAKE_INSTALL_PREFIX}' + sysconfig.get_path('purelib').replace(sysconfig.get_path('data'), ''), end = '')" OUTPUT_VARIABLE PYTHON_INSTALLATION_PATH)
    install(TARGETS _apfel LIBRARY DESTINATION "${PYTHON_INSTALLATION_PATH}")
 else (SWIG_FOUND)
    message ("-- SWIG not found. The python wrapper will not be built.")
