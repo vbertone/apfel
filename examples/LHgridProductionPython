@@ -2,7 +2,7 @@
 
 import apfel
 
-apfel.SetPoleMasses(2**0.5,1e5,1e5)
+apfel.SetPoleMasses(2**0.5,1e5,2e5)
 Qin = 2.0**0.5
 
 apfel.LHAPDFgrid(0,Qin,"ApfelPDFs")

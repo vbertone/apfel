@@ -15,8 +15,8 @@ apfel.InitializeAPFEL();
 # Evolve PDFs on the grids
 eps = 1e-10;
 
-Q20 = float(raw_input("Enter initial scale in GeV^2: ")) 
-Q2  = float(raw_input("Enter final scale in GeV^2: "))
+Q20 = float(input("Enter initial scale in GeV^2: ")) 
+Q2  = float(input("Enter final scale in GeV^2: "))
 
 Q0 = Q20**0.5 - eps
 Q =  Q2**0.5
@@ -32,8 +32,8 @@ uvsr = apfel.NPDF(2,1) - apfel.NPDF(-2,1);
 dvsr = apfel.NPDF(1,1) - apfel.NPDF(-1,1);
 svsr = apfel.NPDF(3,1) - apfel.NPDF(-3,1);
 
-print "Sum rules at Q =",Q,"GeV:"
-print "- Momentum sum rule         = ", momsr
-print "- Up valence sum rule       = ", uvsr
-print "- Down valence sum rule     = ", dvsr
-print "- Strange valence sum rule  = ", svsr
+print("Sum rules at Q =",Q,"GeV:")
+print("- Momentum sum rule         = ", momsr)
+print("- Up valence sum rule       = ", uvsr)
+print("- Down valence sum rule     = ", dvsr)
+print("- Strange valence sum rule  = ", svsr)
