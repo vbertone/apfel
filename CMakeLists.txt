@@ -95,8 +95,3 @@ install(FILES ${PROJECT_SOURCE_DIR}/bin/apfel-config
 ${CMAKE_CURRENT_BINARY_DIR}/examples/CheckAPFEL ${CMAKE_CURRENT_BINARY_DIR}/examples/ListFunctions DESTINATION bin
 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
 GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
-find_package(Python3 REQUIRED)
-execute_process(COMMAND "${Python3_EXECUTABLE}" -c "import sysconfig; print('${CMAKE_INSTALL_PREFIX}' + sysconfig.get_path('purelib').replace(sysconfig.get_path('data'), ''), end = '')" OUTPUT_VARIABLE PYTHON_INSTALLATION_PATH)
-install(TARGETS _apfel DESTINATION "${PYTHON_INSTALLATION_PATH}")
-install(FILES ${CMAKE_BINARY_DIR}/pywrap/apfel.py DESTINATION ${PYTHON_INSTALLATION_PATH})
