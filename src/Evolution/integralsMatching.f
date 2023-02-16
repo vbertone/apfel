@@ -19,6 +19,7 @@
       include "../commons/grid.h"
       include "../commons/integrals.h"
       include "../commons/TimeLike.h"
+      include "../commons/Polarized.h"
       include "../commons/m2th.h"
 **
 *     Input Variables
@@ -28,7 +29,7 @@
 **
 *     Internal Variables
 *
-      integer pt,ptstep
+      integer pt,ptstep,ipteff
       integer s
       double precision fact
 **
@@ -47,10 +48,12 @@
 *     For the space-like evolution one can skip the order alphas because it is
 *     always equal to zero but this can't be done for the time-like evolution 
 *
+      ipteff = ipt
+      if (Polarized) ipteff = 0
       ptstep = 2
       s      = 1
       if(TimeLike.or.k2th(nf).ne.1d0) ptstep = 1
-      do pt=0,ipt,ptstep
+      do pt=0,ipteff,ptstep
          if(pt.ne.0) s = sgn
          integralsMatching = integralsMatching 
      1                     + s * coup**pt
@@ -73,7 +76,7 @@
 *     A1gg = - 4 / 3 TR * delta(1-x) ln(k2th)
 *
       if(.not.TimeLike.and.
-     1     sgn.eq.-1.and.ipt.ge.2.and.k2th(nf).ne.1d0.and.
+     1     sgn.eq.-1.and.ipteff.ge.2.and.k2th(nf).ne.1d0.and.
      2     (kk.eq.3.or.kk.eq.5).and.
      3     alpha.eq.beta)then
          fact = - 4d0 * TR * dlog(k2th(nf)) / 3d0 ! A1gg
