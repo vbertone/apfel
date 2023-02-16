@@ -422,18 +422,6 @@ c      endif
          call LockGrids(.false.)
       endif
 *
-*     If the polarized evolution is invoked at NNLO, give a warning
-*     to inform the user that P^(2,v) is not known yet and that
-*     the code uses P^(2,v) = P^(2,-).
-*
-      if(Polarized.and.ipt.ge.2)then
-         write(6,*) achar(27)//"[33m"//
-     1              "WARNING: the polarized evolution at NNLO is ",
-     2              "incomplete."
-         write(6,*) "         APFEL assumes P^(2,v) = P^(2,minus). "
-     1              //achar(27)//"[0m"
-      endif
-*
 *     Make sure that the NLO QED corrections are included only if
 *     the 'QUniD' solution is used.
 *
