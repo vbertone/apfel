@@ -22,7 +22,8 @@
       include "../commons/lambda_ref_QCD.h"
       include "../commons/AlphaEvolution.h"
       include "../commons/PDFEvolution.h"
-      include "../commons/kren.h"
+      include "../commons/krenpdf.h"
+      include "../commons/krenalpha.h"
       include "../commons/mass_scheme.h"
       include "../commons/m2th.h"
       include "../commons/MaxFlavourPDFs.h"
@@ -63,7 +64,8 @@
       if(InEpsTrunc.ne."done")    call SetEpsilonTruncation(1d-2)
       if(InAlphaEvol.ne."done")   call SetAlphaEvolution("exact")
       if(InPDFEvol.ne."done")     call SetPDFEvolution("exactalpha")
-      if(InKren.ne."done")        call SetRenFacRatio(1d0)
+      if(InKrenPDF.ne."done")     call SetRenFacRatioPDF(1d0)
+      if(InKrenAlpha.ne."done")   call SetRenFacRatioAlpha(1d0)
       if(InMasses.ne."done")      call SetPoleMasses(dsqrt(2d0),4.5d0,
      1                                               175d0)
       if(InThrRatios.ne."done")   call SetMassMatchingScales(1d0,1d0,
@@ -202,7 +204,7 @@
             write(6,*) achar(27)//"[0m"
             call exit(-10)
          endif
-         if(kren.ne.1d0)then
+         if(kren.ne.1d0.or.krena.ne.1d0)then
             write(6,*) achar(27)//"[31mERROR:"
             write(6,*) "Renormalization scale variation not allowed"
             write(6,*) "if small-x resummation is enabled."
@@ -346,15 +348,15 @@ c      endif
 *
 *     Make sure that the polarized evolution at NNLO is done in the FFNS
 *
-      if(Polarized.and.Evs.eq."VF".and.ipt.ge.2)then
-         write(6,*) achar(27)//"[31mERROR:"
-         write(6,*) "The polarized evolution at NNLO is available only",
-     1              " in the FFNS."
-         write(6,*) "(Unknown matching conditions)"
-         write(6,*) "Use 'SetFFNS(nf)' to use the FFNS."
-         write(6,*) achar(27)//"[0m"
-         call exit(-10)
-      endif
+c      if(Polarized.and.Evs.eq."VF".and.ipt.ge.2)then
+c         write(6,*) achar(27)//"[31mERROR:"
+c         write(6,*) "The polarized evolution at NNLO is available only",
+c     1              " in the FFNS."
+c         write(6,*) "(Unknown matching conditions)"
+c         write(6,*) "Use 'SetFFNS(nf)' to use the FFNS."
+c         write(6,*) achar(27)//"[0m"
+c         call exit(-10)
+c      endif
 *
 *     Security switches
 *
@@ -418,18 +420,6 @@ c      endif
          write(6,*) "         ... unlocking subgrids"
      1              //achar(27)//"[0m"
          call LockGrids(.false.)
-      endif
-*
-*     If the polarized evolution is invoked at NNLO, give a warning
-*     to inform the user that P^(2,v) is not known yet and that
-*     the code uses P^(2,v) = P^(2,-).
-*
-      if(Polarized.and.ipt.ge.2)then
-         write(6,*) achar(27)//"[33m"//
-     1              "WARNING: the polarized evolution at NNLO is ",
-     2              "incomplete."
-         write(6,*) "         APFEL assumes P^(2,v) = P^(2,minus). "
-     1              //achar(27)//"[0m"
       endif
 *
 *     Make sure that the NLO QED corrections are included only if

@@ -1,14 +1,20 @@
 # BASIC DEFINITIONS ========================================================================
 
 # define minimum version of cmake
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required (VERSION 3.10)
 
-cmake_policy(SET CMP0086 OLD)
-cmake_policy(SET CMP0078 OLD)
+#cmake_policy(SET CMP0086 OLD)
+#cmake_policy(SET CMP0078 OLD)
 
 # define project name, version and its languages
 project(apfel CXX Fortran)
-set(apfel_VERSION 3.0.7)
+set(apfel_VERSION 3.0.8)
+
+# export version to file
+configure_file(
+  "${PROJECT_SOURCE_DIR}/include/APFEL/version.h.in"
+  "${PROJECT_SOURCE_DIR}/include/APFEL/version.h"
+)
 
 # define c++ standard and issue all the warning demanded by this standard
 set(CMAKE_BUILD_TYPE Release)
@@ -30,7 +36,6 @@ set(prefix ${CMAKE_INSTALL_PREFIX})
 set(exec_prefix "${prefix}")
 set(includedir "${prefix}/include")
 set(libdir "${prefix}/lib")
-set(PACKAGE_VERSION "${apfel_VERSION}")
 configure_file("${PROJECT_SOURCE_DIR}/bin/apfel-config.in" "${PROJECT_SOURCE_DIR}/bin/apfel-config")
 
 # Fortran wrappers =========================================================================
@@ -42,20 +47,17 @@ configure_file("${PROJECT_SOURCE_DIR}/include/APFEL/FortranWrappers.h.cmake" "${
 # LHAPDF
 find_program(LHAPDF_CONFIG lhapdf-config)
 if (LHAPDF_CONFIG)
-  exec_program(${LHAPDF_CONFIG}
-    ARGS --cxxflags
-    OUTPUT_VARIABLE LHAPDF_CXX_FLAGS
-  )
-  set(LHAPDF_CXX_FLAGS ${LHAPDF_CXX_FLAGS} CACHE STRING INTERNAL)
-  exec_program(${LHAPDF_CONFIG}
-    ARGS --ldflags
-    OUTPUT_VARIABLE LHAPDF_LIBRARIES
-  )
-  set(LHAPDF_LIBRARIES ${LHAPDF_LIBRARIES} CACHE STRING INTERNAL)
+   execute_process(COMMAND ${LHAPDF_CONFIG} --cxxflags OUTPUT_VARIABLE LHAPDF_CXX_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+   execute_process(COMMAND ${LHAPDF_CONFIG} --libs OUTPUT_VARIABLE LHAPDF_LIBRARIES OUTPUT_STRIP_TRAILING_WHITESPACE)
+   set(LHAPDF_CXX_FLAGS ${LHAPDF_CXX_FLAGS} CACHE STRING INTERNAL)
+   set(LHAPDF_LIBRARIES ${LHAPDF_LIBRARIES} CACHE STRING INTERNAL)
 else(LHAPDF_CONFIG)
   add_compile_definitions(NOLHAPDF)
-  message("LHAPDF not found!")
+  message("-- LHAPDF not found")
 endif(LHAPDF_CONFIG)
+
+# LHAPDF
+find_program(LHAPDF_CONFIG lhapdf-config)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LHAPDF_CXX_FLAGS} -Wall -fPIC -Wunused")
 
@@ -79,7 +81,7 @@ enable_testing()
 add_subdirectory(examples)
 
 # define target library
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 # install
 install(TARGETS apfel
@@ -90,8 +92,3 @@ install(FILES ${PROJECT_SOURCE_DIR}/bin/apfel-config
 ${CMAKE_CURRENT_BINARY_DIR}/examples/CheckAPFEL ${CMAKE_CURRENT_BINARY_DIR}/examples/ListFunctions DESTINATION bin
 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
 GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
-find_package(Python3 REQUIRED)
-execute_process(COMMAND "${Python3_EXECUTABLE}" -c "import sysconfig; print('${CMAKE_INSTALL_PREFIX}' + sysconfig.get_path('purelib').replace(sysconfig.get_path('data'), ''), end = '')" OUTPUT_VARIABLE PYTHON_INSTALLATION_PATH)
-install(TARGETS _apfel DESTINATION "${PYTHON_INSTALLATION_PATH}")
-install(FILES ${CMAKE_BINARY_DIR}/pywrap/apfel.py DESTINATION ${PYTHON_INSTALLATION_PATH})

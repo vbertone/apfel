@@ -2349,12 +2349,18 @@ c     1     - 2d0 * lnx * log(1d0+x) - pi**2 / 6d0
 *     (For the polarized case, this contributions has not been calculated
 *     yet. We include the function but we set it to zero.)
 *
-       FUNCTION P2NSSPA (Y, NF)
+       FUNCTION P2NSSPA (X, NF)
 *
        IMPLICIT REAL*8 (A-Z)
        INTEGER NF
+
+       L  = log (x)
+       L1 = log (1.d0-x)
 *
-       P2NSSPA = 0D0
+       dP2S = - 42.97* L*L - 29.29* L + 179.1 + 117.8* x - 385.5* x*x
+     ,        + 75.94* x**3 + 460.8* x*L + 8.818* x*L*L + 2.681* L1
+*
+       P2NSSPA = (1.-x) * nf * dP2S
 *
        RETURN
        END

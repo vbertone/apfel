@@ -89,13 +89,14 @@ c      call SetMaxFlavourAlpha(5)
 *     The external set must have the name "ExternalPDFSetAPFEL" and the
 *     following structure:
 *
-*     call ExternalSetAPFEL(x,xf)
+*     call ExternalSetAPFEL(x,Q,xf)
 *
-*     where "x" is a double corresponding to the Bjorken's variable and
-*     xf(-6:7) is an array of double that corresponds to the set of
-*     distributions in the physical basis (tbar, bbar, ..., g, ..., b, t)
-*     and where the component xf(7) is the photon distribution.
-*     This subroutine is called only if the user sets:
+*     where "x" is a double corresponding to the Bjorken's variable, "Q"
+*     is the initial scale, and xf(-6:7) is an array of double that
+*     corresponds to the set of distributions in the physical basis
+*     (tbar, bbar, ..., g, ..., b, t) and where the component xf(7) is
+*     the photon distribution. This subroutine is called only if the
+*     user sets:
 *
 *      call SetPDFSet("external")     
 *

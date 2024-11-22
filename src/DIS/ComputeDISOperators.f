@@ -46,14 +46,14 @@
 *     Internal Variables
 *
       integer jgrid,ipdf,ihq
-      integer pt,ipt_FF,iptbkp,ipt_max_IC
+      integer pt,ipt_FF,ipt_max_IC!,iptbkp
       integer alpha,beta,gamma,tau
       integer nf
       integer gbound
       integer ipr
       integer i
       integer ik
-      double precision Q2,muF2,mu2as,muR,W2,M2(4:6),HeavyQuarkMass
+      double precision Q2,muF2,muR2,W2,M2(4:6),HeavyQuarkMass
       double precision as(0:2),a_QCD
       double precision bq(0:6),dq(0:6),bqt(0:6)
       double precision frac,fr3
@@ -102,35 +102,24 @@
 *
       muF2 = kfacQ * Q2
 *
-*     Compute alphas (a_QCD takes as an argument the factorization scale
-*     and converts it internally into the renormalization scale unless
-*     the scale variation procedure 1 is used. In that case there is no
-*     internal conversion because muR / muF = 1).
+*     Renormalization scale
 *
-      mu2as = muF2
-      if(ScVarProc.eq.1) mu2as = krenQ * Q2
+      muR2 = krenQ * Q2
 *
 *     Scale down the perturbative order of the alphas evolution if one
 *     of the FFNSs has been chosen
 *
       as(0) = 1d0
-      if(MassScheme(1:3).eq."FFN".and.ProcessDIS.eq."NC")then
-         iptbkp = ipt
-         call SetPerturbativeOrder(max(0,ipt-1))
-         as(1) = a_QCD(mu2as)
-         call SetPerturbativeOrder(iptbkp)
-      else
-         as(1) = a_QCD(mu2as)
-      endif
+      as(1) = a_QCD(muR2)
       as(2) = as(1) * as(1)
 *
 *     Find number of active flavours at the scale Q2
 *
-      if(muF2.ge.m2th(6))then
+      if(Q2.ge.m2th(6))then
          nf = 6
-      elseif(muF2.ge.m2th(5))then
+      elseif(Q2.ge.m2th(5))then
          nf = 5
-      elseif(muF2.ge.m2th(4))then
+      elseif(Q2.ge.m2th(4))then
          nf = 4
       else
          nf = 3
@@ -158,13 +147,9 @@
 *
 *     Find "ixi" such that "xigrid(ixi)" < "xi" < "xigrid(ixi+1)"
 *
-*     Renormalization scale
-*
-      muR = dsqrt(krenQ) * Q
-*
       do ihq=4,6
          ixi(ihq) = 0
-         M2(ihq) = HeavyQuarkMass(ihq,muR)**2
+         M2(ihq) = HeavyQuarkMass(ihq,dsqrt(muR2))**2
          xi(ihq) = Q2 / M2(ihq)
          if(xi(ihq).le.xigrid(xistep))then
             ixi(ihq) = 0
@@ -196,14 +181,14 @@
 *
          if(DampingFONLL)then
             if(ihq.gt.Nf_FF.and.DampPowerFONLL(ihq).ne.0)then
-               if(muF2.gt.m2th(ihq))then
+               if(Q2.gt.m2th(ihq))then
                   if(DampPowerFONLL(ihq).lt.0)then
                      damp(ihq) = 1d0
                      c0(ihq)   = 0d0
                      c1(ihq)   = 0d0
                   else
                      damp(ihq) = ( 1d0
-     1                    - m2th(ihq) / muF2 )**DampPowerFONLL(ihq)
+     1                    - m2th(ihq) / Q2 )**DampPowerFONLL(ihq)
                   endif
                else
                   damp(ihq) = 0d0
@@ -388,7 +373,7 @@ c            damp(4) = 1d0
                      if(ipt.ge.2)then
                         if(Nf_FF.lt.6)then
                            do ihq=Nf_FF+1,6
-                              if(muF2.ge.m2th(ihq))then
+                              if(Q2.ge.m2th(ihq))then
                                  C2nsp(3) = C2nsp(3) + as(2) *
      1                                ( c0(ihq)
      2                                * SC2m0NC(jgrid,ixi(ihq),
@@ -412,7 +397,7 @@ c            damp(4) = 1d0
 *
                      if(Nf_FF.lt.6)then
                         do ihq=Nf_FF+1,6
-                           if(muF2.ge.m2th(ihq))then
+                           if(Q2.ge.m2th(ihq))then
                               do pt=1,ipt
                                  C2g(ihq) = C2g(ihq) + as(pt)
      1                                * ( c0(ihq)
@@ -697,7 +682,7 @@ c            damp(4) = 1d0
      5                                * SCLmNC(jgrid,ixi(ihq)+1,
      6                                3,2,alpha,beta) )
                               endif
-                              if(muF2.ge.m2th(ihq))then
+                              if(Q2.ge.m2th(ihq))then
                                  C2nsp(3) = C2nsp(3) + as(2) *
      1                                ( - damp(ihq) * ( c0(ihq)
      2                                * SC2m0NC(jgrid,ixi(ihq),
@@ -753,7 +738,7 @@ c            damp(4) = 1d0
      6                                2,pt,alpha,beta) )
                               enddo
                            endif
-                           if(muF2.ge.m2th(ihq))then
+                           if(Q2.ge.m2th(ihq))then
                               do pt=1,ipt_FF
                                  C2g(ihq) = C2g(ihq) + as(pt)
      1                                * ( - damp(ihq) * ( c0(ihq)
@@ -1270,7 +1255,7 @@ c            damp(4) = 1d0
 *
                      if(Nf_FF.lt.6)then
                         do ihq=Nf_FF+1,6
-                           if(muF2.ge.m2th(ihq))then
+                           if(Q2.ge.m2th(ihq))then
                               do pt=0,ipt_FF
                                  C2g(ihq) = C2g(ihq) + as(pt)
      1                                * ( c0(ihq)
@@ -1562,7 +1547,7 @@ c            damp(4) = 1d0
      6                                3,pt,alpha,beta) )
                               enddo
                            endif
-                           if(muF2.ge.m2th(ihq))then
+                           if(Q2.ge.m2th(ihq))then
                               do pt=0,ipt_FF
                                  if(pt.ge.1)
      1                                C2gm(ihq) = C2gm(ihq) - damp(ihq)
@@ -2863,7 +2848,7 @@ c            damp(4) = 1d0
 *     Include NLO QED correction if requested
 *
       if(SFNLOQED.and.NLOQED.and.ipt.ge.1)
-     1     call IncludeNLOQEDCorrections(Q2,muF2,nf,fr3,ixi,c0,c1,damp,
+     1     call IncludeNLOQEDCorrections(Q2,muR2,nf,fr3,ixi,c0,c1,damp,
      2     bq,dq,ipr)
 *
 *     If the computation of the evolution operator is enabled

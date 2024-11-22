@@ -17,7 +17,6 @@
       include "../commons/alpha_ref_QCD.h"
       include "../commons/lambda_ref_QCD.h"
       include "../commons/AlphaEvolution.h"
-      include "../commons/kren.h"
       include "../commons/m2th.h"
       include "../commons/mass_scheme.h"
       include "../commons/Nf_FF.h"
@@ -50,10 +49,9 @@ c      return
       asr0 = alpha_ref_QCD / 4d0 / pi
 *
       mur20 = q2_ref_QCD
-      mur2  = kren * mu2F
+      mur2  = mu2F
       do i=4,6
-         mur2th(i) = kren * m2th(i)
-c         mur2th(i) = m2th(i)
+         mur2th(i) = m2th(i)
       enddo
       do i=3,6
          lambda2(i) = LambdaQCD(i)**2
@@ -115,9 +113,7 @@ c         mur2th(i) = m2th(i)
 *     (4*pi) and (4*pi)^2 respectively to match the notations. Note that in terms 
 *     of the MSbar mass this coefficients change.
 *
-         kappa = kren * k2th(nfi+snf)          ! mu_R / mu_F
-c         kappa = kren                         ! mu_R / mu_F
-c         kappa = 1d0                          ! mu_R / mu_F
+         kappa = k2th(nfi+snf)          ! mu_R / mu_F
          ln = dlog(kappa)
 *     Pole Mass
          if(mass_scheme.eq."Pole")then
@@ -172,6 +168,8 @@ c         kappa = 1d0                          ! mu_R / mu_F
       function as_expanded(nf,mu20,as0,mu2,ipt)
 *
       implicit none
+*
+      include "../commons/krenalpha.h"
 **
 *     Input Variables
 *
@@ -182,19 +180,20 @@ c         kappa = 1d0                          ! mu_R / mu_F
 *     Internal Variables
 *
       double precision asi
-      double precision alo,t,as,den
-      double precision beta0apf,beta1apf,beta2apf,b1,b2
+      double precision alo,t,as,den,lk
+      double precision beta0apf,beta1apf,beta2apf,bt0,b1,b2
 **
 *     Output Variables
 *
       double precision as_expanded
 *
-      b1 = beta1apf(nf) / beta0apf(nf)
-      b2 = beta2apf(nf) / beta0apf(nf)
+      bt0 = beta0apf(nf)
+      b1 = beta1apf(nf) / bt0
+      b2 = beta2apf(nf) / bt0
 *
       asi = as0
-      t   = log(mu2/mu20)
-      den = 1d0 + beta0apf(nf) * asi * t
+      t   = log(mu2/mu20/krena)
+      den = 1d0 + bt0 * asi * t
       alo = asi / den
 *
 *     LO
@@ -213,6 +212,14 @@ c         kappa = 1d0                          ! mu_R / mu_F
          as = alo * ( 1d0 
      1      + ( alo * ( alo - asi ) * ( b2 - b1**2 )
      2      + as * b1 * dlog(as/asi) ) )
+      endif
+*
+      if(krena.ne.1d0)then
+         lk = dlog(1d0/krena)
+         if(ipt.ge.1) as = as + alo**2 * bt0 * lk
+         if(ipt.ge.2) as = as + asi**3 *
+     1        ( - bt0 * b1 * ( 2d0 * log(den) - 1d0 ) * lk
+     2        + ( bt0 * lk )**2 ) / den**3
       endif
 *
       as_expanded = as
@@ -235,7 +242,7 @@ c         kappa = 1d0                          ! mu_R / mu_F
 *
       INTEGER NSTEP,K1
       DOUBLE PRECISION AS
-      DOUBLE PRECISION BETA0APF,FBETA
+      DOUBLE PRECISION FBETA
       DOUBLE PRECISION DLR,LRRAT,SXTH
       DOUBLE PRECISION XK0,XK1,XK2,XK3
       PARAMETER(NSTEP=10)
@@ -251,13 +258,13 @@ c         kappa = 1d0                          ! mu_R / mu_F
 *
 *     Analytical solution at leading order
 *
-      IF(IPT.EQ.0)THEN
-         AS = AS0 / ( 1D0 + BETA0APF(NF) * AS0 * LRRAT )
-*
-*     Numerical solution of the evolution equation
-*     with fourth-order Runge-Kutta beyond leading order
-*
-      ELSE
+c      IF(IPT.EQ.0)THEN
+c         AS = AS0 / ( 1D0 + BETA0APF(NF) * AS0 * LRRAT )
+c*
+c*     Numerical solution of the evolution equation
+c*     with fourth-order Runge-Kutta beyond leading order
+c*
+c      ELSE
          DO K1=1,NSTEP
             XK0 = DLR * FBETA(AS              ,NF,IPT)
             XK1 = DLR * FBETA(AS + 0.5D0 * XK0,NF,IPT)
@@ -265,7 +272,7 @@ c         kappa = 1d0                          ! mu_R / mu_F
             XK3 = DLR * FBETA(AS +         XK2,NF,IPT)
             AS  = AS + SXTH * ( XK0 + 2D0 * XK1 + 2D0 * XK2 + XK3 )
          ENDDO
-      ENDIF
+c      ENDIF
 *
       AS_EXACT = AS
 *
@@ -318,15 +325,19 @@ c         kappa = 1d0                          ! mu_R / mu_F
       function fbeta(a,nf,ipt)
 *
       implicit none
+*
+      include "../commons/krenalpha.h"
 **
 *     Input Variables
 *
-      double precision a
       integer nf,ipt
+      double precision a
 **
 *     Internal Variables
 *
       double precision beta0apf,beta1apf,beta2apf,beta3apf
+      double precision lk,lk2,lk3,a2,a3,a4,bt0,bt1,bt2,b0,b1,b2
+      double precision beta0p,beta1p,beta2p,beta3p
 **
 *     Output Variables
 *
@@ -343,6 +354,33 @@ c         kappa = 1d0                          ! mu_R / mu_F
          fbeta = - a**2 * ( beta0apf(nf)
      1           + a * ( beta1apf(nf)
      2           + a * ( beta2apf(nf) + a * beta3apf(nf) ) ) )
+      endif
+
+      if(krena.ne.1d0)then
+         lk  = dlog(1d0/krena) / 2d0
+         lk2 = lk * lk
+         lk3 = lk * lk2
+         a2  = a * a
+         a3  = a * a2
+         a4  = a * a3
+         bt0 = beta0apf(nf)
+         bt1 = beta1apf(nf)
+         bt2 = beta2apf(nf)
+         b0 = - bt0
+         b1 = 0d0
+         if(ipt.ge.1) b1 = - bt1
+         b2 = 0d0
+         if(ipt.ge.2) b2 = - bt2
+         beta0p = a2 * b0 + a3 * b1 + a4 * b2
+         beta1p = 2d0 * a * b0 + 3d0 * a2 * b1 + 4d0 * a3 * b2
+         beta2p = 2d0 * b0 + 6d0 * a * b1 + 12d0 * a2 * b2
+         beta3p = 6d0 * b1 + 24d0 * a * b2
+         fbeta = beta0p
+     1        + beta0p * beta1p * lk
+     2        + ( beta0p * beta1p**2 + beta0p**2 * beta2p ) * lk2 / 2d0
+     3        + ( beta0p * beta1p**3 + 4d0 * beta0p**2 * beta1p * beta2p
+     4        + beta0p**3 * beta3p ) * lk3 / 6d0
+
       endif
 *
       return
@@ -370,16 +408,25 @@ c         kappa = 1d0                          ! mu_R / mu_F
       function beta1apf(nf)
 *
       implicit none
+*
+      include "../commons/krenalpha.h"
 **
 *     Input Variables
 *
       integer nf
+**
+*     Internal Variables
+*
+      double precision beta0apf
 **
 *     Output Variables
 *
       double precision beta1apf
 *
       beta1apf = 102d0 - 38d0 / 3d0 * nf
+*
+      if(krena.ne.1d0) beta1apf = beta1apf
+     1     + 2d0 * beta0apf(nf)**2 * dlog(1d0/krena) / 2d0
 *
       return
       end
@@ -388,10 +435,17 @@ c         kappa = 1d0                          ! mu_R / mu_F
       function beta2apf(nf)
 *
       implicit none
+*
+      include "../commons/krenalpha.h"
 **
 *     Input Variables
 *
       integer nf
+**
+*     Internal Variables
+*
+      double precision lk, lk2
+      double precision beta0apf, beta1apf
 **
 *     Output Variables
 *
@@ -399,6 +453,14 @@ c         kappa = 1d0                          ! mu_R / mu_F
 *
       beta2apf = 2857d0 / 2d0 - 5033d0 / 18d0 * nf 
      1         + 325d0 / 54d0 * nf**2
+*
+      if(krena.ne.1d0)then
+         lk  = dlog(1d0/krena) / 2d0
+         lk2 = lk * lk
+         beta2apf = beta2apf
+     1        + 5d0 *beta1apf(nf) * beta0apf(nf) * lk
+     2        - 7d0 * beta0apf(nf)**3 * lk2
+      endif
 *
       return
       end
@@ -514,7 +576,6 @@ c         kappa = 1d0                          ! mu_R / mu_F
 *
       include "../commons/lambda_ref_QCD.h"
       include "../commons/m2th.h"
-      include "../commons/kren.h"
       include "../commons/ipt.h"
       include "../commons/mass_scheme.h"
 **
@@ -535,7 +596,7 @@ c         kappa = 1d0                          ! mu_R / mu_F
 *
 *     Matching condition
 *
-      ln = dlog( kren * k2th(i) )
+      ln = dlog(k2th(i))
 *     Pole Mass
       if(mass_scheme.eq."Pole")then
          c1 = 2d0 / 3d0 * ln
@@ -546,7 +607,7 @@ c         kappa = 1d0                          ! mu_R / mu_F
          c2 = 4d0 / 9d0 * ln**2 + 22d0 / 3d0 * ln - 22d0 / 9d0
       endif
 *
-      thr = kren * m2th(i)
+      thr = m2th(i)
       lambda2u = lambda**2
       lambda2d = LambdaQCD(i-1)**2
       au = as_lambda(i,lambda2u,thr,ipt)
@@ -570,7 +631,6 @@ c         kappa = 1d0                          ! mu_R / mu_F
 *
       include "../commons/lambda_ref_QCD.h"
       include "../commons/m2th.h"
-      include "../commons/kren.h"
       include "../commons/ipt.h"
       include "../commons/mass_scheme.h"
 **
@@ -589,7 +649,7 @@ c         kappa = 1d0                          ! mu_R / mu_F
 *
       double precision LambdaMatchDown
 *
-      ln = dlog( kren * k2th(i+1) )
+      ln = dlog(k2th(i+1))
 *     Pole Mass
       if(mass_scheme.eq."Pole")then
          c1 = - 2d0 / 3d0 * ln
@@ -600,7 +660,7 @@ c         kappa = 1d0                          ! mu_R / mu_F
          c2 = 4d0 / 9d0 * ln**2 - 22d0 / 3d0 * ln + 22d0 / 9d0
       endif
 *
-      thr = kren * m2th(i+1)
+      thr = m2th(i+1)
       lambda2u = LambdaQCD(i+1)**2
       lambda2d = lambda**2
       au = as_lambda(i+1,lambda2u,thr,ipt)
@@ -672,7 +732,7 @@ c         kappa = 1d0                          ! mu_R / mu_F
          zriddr=x2
       else
          write(6,*) "root must be bracketed in zriddr"
-         call exit(-10);
+         call exit(-10)
       endif
       return
       END
@@ -688,7 +748,6 @@ c         kappa = 1d0                          ! mu_R / mu_F
       implicit none
 *
       include "../commons/ThresholdAlphaQCD.h"
-      include "../commons/kren.h"
       include "../commons/m2th.h"
 **
 *     Internal Variables

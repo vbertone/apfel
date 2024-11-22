@@ -1,23 +1,23 @@
 ************************************************************************
 *
-*     SetRenFacRatio.f:
+*     SetRenFacRatioPDF.f:
 *
 *     This subroutine sets the ratio between renormalization and
-*     factiorization scales.
+*     factorization scales in the PDF evolution.
 *
 ************************************************************************
-      subroutine SetRenFacRatio(ratio)
+      subroutine SetRenFacRatioPDF(ratio)
 *
       implicit none
 *
-      include "../commons/kren.h"
+      include "../commons/krenpdf.h"
 *
 *     Variables
 *
       double precision ratio
 *
-      kren   = ratio * ratio
-      InKren = "done"
+      kren      = ratio * ratio
+      InKrenPDF = "done"
 *
       return
       end

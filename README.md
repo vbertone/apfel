@@ -35,20 +35,25 @@ git tag -l
 git checkout tags/tag_name
 ```
 
-## Installation 
+## Installation
 
-Checkout the code and compile the code using the
-following procedure:
+The code can be compiled using the following procedure:
 
 ```Shell
 cd apfel
-./configure --prefix=/where/install/apfel #(optional)
+mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=/your/installation/path/ ..
 make && make install
 ```
+By the default, if no prefix is given, the program will
+be installed in the /usr/local folder. If you want (or need) to use a
+different path, remember to export the APFEL `/lib` and `/bin` folders into the
+`$LD_LIBRARY_PATH` and `$PATH`, respectively. More configuration
+options can be accessed by typing:
 
-By the default, if prefix is not set, the program is installed in
-/usr/local. If you define a different prefix, remember to export
-it into the LD_LIBRARY_PATH.
+```Shell
+ccmake .
+```
 
 ## Known issues
 

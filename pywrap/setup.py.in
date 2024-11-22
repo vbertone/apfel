@@ -44,7 +44,7 @@ else:
 
 ## Setup definition
 setup(name = 'APFEL',
-      version = '@PACKAGE_VERSION@',
+      version = '@apfel_VERSION@',
       #include_package_data = True,
       ext_modules=[ext],
       py_modules = ['apfel'],

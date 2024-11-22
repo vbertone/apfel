@@ -24,7 +24,7 @@ extern "C" {
       {
 	_pdfs = LHAPDF::mkPDF(str, *mem);
       }
-    catch(LHAPDF::Exception e)
+    catch(LHAPDF::Exception& e)
       {
 	std::cout << e.what() << std::endl;
       }

@@ -2,6 +2,7 @@
 
 #include "APFEL/APFELevol.h"
 #include "APFEL/APFELfwevol.h"
+#include "APFEL/version.h"
 
 #include <sstream>
 #include <cstring>
@@ -176,7 +177,7 @@ namespace APFEL {
 
   std::string GetVersion(void) 
   { 
-    return STR(APFEL_VERSION); 
+    return STR(VERSION); 
   }
 
   void CleanUp(void)
@@ -384,9 +385,14 @@ namespace APFEL {
     fsettaumass(&masst);
   }
 
-  void SetRenFacRatio(double ratio)
+  void SetRenFacRatioPDF(double ratio)
   {
-    fsetrenfacratio(&ratio);
+    fsetrenfacratiopdf(&ratio);
+  }
+
+  void SetRenFacRatioAlpha(double ratio)
+  {
+    fsetrenfacratioalpha(&ratio);
   }
   
   void SetReplica(int nr)

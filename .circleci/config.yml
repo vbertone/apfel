@@ -2,15 +2,10 @@ version: 2.1
 jobs:
   build:
     machine:
-      image: ubuntu-2004:202201-02
+      image: ubuntu-2204:2023.10.1
     steps:
       - checkout
       - run: sudo apt-get update
       - run: sudo apt-get install gfortran g++ gcc
-      - run: autoreconf -f -i
-      - run: ./configure --disable-lhapdf && make
-      - run: ./examples/Luminosity
-      - run: ./examples/Tabulation < examples/input.txt
-      - run: ./examples/SumRules < examples/input.txt
-      - run: ./examples/DISObservables < examples/input.txt
-      - run: ./examples/CheckAPFEL
+      - run: cmake . && make -j8
+      - run: ctest -V
