@@ -4,6 +4,7 @@ if (SWIG_FOUND)
    include(${SWIG_USE_FILE})
 
    # Include python
+   cmake_policy(SET CMP0148 OLD)
    find_package(PythonLibs REQUIRED)
    include_directories(${PYTHON_INCLUDE_PATH})
 
